@@ -6,6 +6,7 @@ from typing import Dict, Any
 from my_proof.models import ProofResponse
 from my_proof.proof_of_authenticity import proof_of_authenticity
 from my_proof.proof_of_uniqueness import proof_of_uniqueness
+from my_proof.proof_of_quality import proof_of_quality
 
 
 class Proof:
@@ -19,7 +20,7 @@ class Proof:
         
         authenticity = proof_of_authenticity(self.config)
         uniqueness = proof_of_uniqueness(self.config)
-        
+        category_scores_packed_byte_array, quality = proof_of_quality(self.config)
 
         # # Iterate through files and calculate data validity
         # members = None
@@ -58,5 +59,10 @@ class Proof:
         self.proof_response.authenticity = authenticity
         self.proof_response.ownership = authenticity
         self.proof_response.uniqueness = uniqueness
+        self.proof_response.quality = quality
+        
+        print(f"category_scores_packed_byte_array: {category_scores_packed_byte_array}")
+        
+        # self.proof_response.metadata = category_scores_packed_byte_array
 
         return self.proof_response

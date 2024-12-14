@@ -2,3 +2,6 @@ pydantic
 requests
 datasketch
 numpy
+munch
+matplotlib
+openai
