@@ -6,7 +6,7 @@ import traceback
 import zipfile
 from typing import Dict, Any
 
-from my_proof.proof import Proof
+from my_proof import Proof
 
 INPUT_DIR, OUTPUT_DIR, SEALED_DIR = '/input', '/output', '/sealed'
 

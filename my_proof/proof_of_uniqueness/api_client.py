@@ -18,7 +18,7 @@
 import requests
 from typing import List, Dict
 from datasketch import MinHash
-from my_proof.proof.proof_of_uniqueness.minhash_utils import serialize_minhash, deserialize_minhash
+from my_proof.proof_of_uniqueness.minhash_utils import serialize_minhash, deserialize_minhash
 
 
 class ProofOfUniquenessClient:

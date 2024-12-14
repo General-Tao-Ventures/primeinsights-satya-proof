@@ -17,8 +17,8 @@
 
 import logging
 from typing import Dict, Any
-from my_proof.proof.proof_of_uniqueness.api_client import ProofOfUniquenessClient
-from my_proof.proof.proof_of_uniqueness.data_processor import DataProcessor
+from my_proof.proof_of_uniqueness.api_client import ProofOfUniquenessClient
+from my_proof.proof_of_uniqueness.data_processor import DataProcessor
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
