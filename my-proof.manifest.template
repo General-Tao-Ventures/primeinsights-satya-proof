@@ -9,6 +9,7 @@ sgx.max_threads = 4
 loader.env.PRIME_API_KEY = { passthrough = true }
 loader.env.PROOF_KEY = { passthrough = true }
 loader.env.AMAZON_LINK = { passthrough = true }
+loader.env.USER_ID = { passthrough = true }
 
 loader.entrypoint = { path = "/my_proof/__main__.py" }
 

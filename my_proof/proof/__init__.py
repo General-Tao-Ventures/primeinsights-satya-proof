@@ -5,6 +5,7 @@ from typing import Dict, Any
 
 from my_proof.models.proof_response import ProofResponse
 from my_proof.proof.proof_of_authenticity import proof_of_authenticity
+from my_proof.proof.proof_of_uniqueness import proof_of_uniqueness
 
 
 class Proof:
@@ -17,6 +18,7 @@ class Proof:
         logging.info("Starting proof generation")
         
         authenticity = proof_of_authenticity(self.config)
+        uniqueness = proof_of_uniqueness(self.config)
         
 
         # # Iterate through files and calculate data validity
@@ -53,6 +55,8 @@ class Proof:
         #     'score3': 3
         # }
         
-        self.proof_response.authenticity = self.proof_response.ownership = authenticity
+        self.proof_response.authenticity = authenticity
+        self.proof_response.ownership = authenticity
+        self.proof_response.uniqueness = uniqueness
 
         return self.proof_response

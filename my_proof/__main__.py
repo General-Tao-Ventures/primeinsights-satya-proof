@@ -19,9 +19,12 @@ def load_config() -> Dict[str, Any]:
         'dlp_id': 1234,  # Set your own DLP ID here
         'use_sealing': os.path.isdir(SEALED_DIR),
         'tee_api_endpoint': "https://tee.primeinsightsdao.com",
+        'uniqueness_threshold': 0.7,
+        'num_perm': 128,
         'prime_api_key': os.environ.get('PRIME_API_KEY', None),
         'amazon_link': os.environ.get('AMAZON_LINK', None),
         'proof_key': os.environ.get('PROOF_KEY', None),
+        'user_id': os.environ.get('USER_ID', None),
     }
     logging.info(f"Using config: {json.dumps(config, indent=2)}")
     return config
