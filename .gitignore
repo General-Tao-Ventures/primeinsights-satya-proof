@@ -5,5 +5,7 @@ __pycache__/
 
 demo/*
 !demo/input/
+demo/input/extracted/
 
 .idea/
+venv/

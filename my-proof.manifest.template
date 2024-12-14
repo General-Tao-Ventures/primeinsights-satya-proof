@@ -6,7 +6,9 @@ sgx.max_threads = 4
 
 # Whitelist ENV variables that get passed to the enclave
 # Using { passthrough = true } allows values to be passed in from the Satya node's /RunProof endpoint
-loader.env.PASSCODE = { passthrough = true }
+loader.env.PRIME_API_KEY = { passthrough = true }
+loader.env.PROOF_KEY = { passthrough = true }
+loader.env.AMAZON_LINK = { passthrough = true }
 
 loader.entrypoint = { path = "/my_proof/__main__.py" }
 

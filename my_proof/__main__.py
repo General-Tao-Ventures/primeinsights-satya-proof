@@ -18,8 +18,10 @@ def load_config() -> Dict[str, Any]:
     config = {
         'dlp_id': 1234,  # Set your own DLP ID here
         'use_sealing': os.path.isdir(SEALED_DIR),
-        'input_dir': INPUT_DIR,
-        'passcode': os.environ.get('PASSCODE', None),
+        'tee_api_endpoint': "https://tee.primeinsightsdao.com",
+        'prime_api_key': os.environ.get('PRIME_API_KEY', None),
+        'amazon_link': os.environ.get('AMAZON_LINK', None),
+        'proof_key': os.environ.get('PROOF_KEY', None),
     }
     logging.info(f"Using config: {json.dumps(config, indent=2)}")
     return config
@@ -32,8 +34,11 @@ def run() -> None:
 
     if not input_files_exist:
         raise FileNotFoundError(f"No input files found in {INPUT_DIR}")
-    extract_input()
 
+    zip_filepath = extract_input()
+    config["input_zip_filepath"] = zip_filepath
+    config["input_extracted_dir"] = os.path.join(INPUT_DIR, 'extracted')
+    
     proof = Proof(config)
     proof_response = proof.generate()
 
@@ -43,18 +48,21 @@ def run() -> None:
     logging.info(f"Proof generation complete: {proof_response}")
 
 
-def extract_input() -> None:
+def extract_input() -> str:
     """
     If the input directory contains any zip files, extract them
     :return:
     """
+    zip_filepath = ""
     for input_filename in os.listdir(INPUT_DIR):
         input_file = os.path.join(INPUT_DIR, input_filename)
 
         if zipfile.is_zipfile(input_file):
+            zip_filepath = input_file
             with zipfile.ZipFile(input_file, 'r') as zip_ref:
-                zip_ref.extractall(INPUT_DIR)
+                zip_ref.extractall(INPUT_DIR + '/extracted')
 
+    return zip_filepath
 
 if __name__ == "__main__":
     try:
