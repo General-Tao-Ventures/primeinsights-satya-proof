@@ -8,7 +8,7 @@ from typing import Dict, Any
 
 from my_proof import Proof
 
-INPUT_DIR, OUTPUT_DIR, SEALED_DIR = '/input', '/output', '/sealed'
+INPUT_DIR, OUTPUT_DIR = '/input', '/output'
 
 logging.basicConfig(level=logging.INFO, format='%(message)s')
 
@@ -17,7 +17,6 @@ def load_config() -> Dict[str, Any]:
     """Load proof configuration from environment variables."""
     config = {
         'dlp_id': 1234,  # Set your own DLP ID here
-        'use_sealing': os.path.isdir(SEALED_DIR),
         'tee_api_endpoint': "https://tee.primeinsightsdao.com/api",
         'uniqueness_threshold': 0.7,
         'num_perm': 128,
