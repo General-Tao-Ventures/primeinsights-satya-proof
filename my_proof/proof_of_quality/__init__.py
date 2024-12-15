@@ -68,12 +68,12 @@ def process_single_file(csv_file: Path, config: Dict[str, any]) -> Dict:
 
 
 def quantize_scores(scores: List[float]) -> List[int]:
-    """Quantize scores to the uint16 range (0 to 65535)."""
-    quantized_scores = [int(score * 65535) for score in scores]
+    """Quantize scores to the uint16 range (0 to 255)."""
+    quantized_scores = [int(score * 255) for score in scores]
     return quantized_scores
 
 
-def pack_scores(metadata_scores: List[int], validation_scores: List[int]) -> bytes:
+def pack_scores_to_bytes(metadata_scores: List[int], validation_scores: List[int]) -> bytes:
     """
     Packs metadata and validation scores into a Big Endian byte array.
     Each score is stored as a uint16 (2 bytes) in Big Endian format.
@@ -100,21 +100,21 @@ def pack_scores(metadata_scores: List[int], validation_scores: List[int]) -> byt
 
     # Pack metadata scores in Big Endian format
     for score in metadata_scores:
-        if not 0 <= score <= 65535:
-            raise ValueError("Metadata scores must be uint16 values between 0 and 65535")
+        if not 0 <= score <= 255:
+            raise ValueError("Metadata scores must be uint16 values between 0 and 255")
         # '>H' specifies big-endian unsigned short (2 bytes)
         packed_bytes += struct.pack('>H', score)
 
     # Pack validation scores in Big Endian format
     for score in validation_scores:
-        if not 0 <= score <= 65535:
-            raise ValueError("Validation scores must be uint16 values between 0 and 65535")
+        if not 0 <= score <= 255:
+            raise ValueError("Validation scores must be uint16 values between 0 and 255")
         packed_bytes += struct.pack('>H', score)
 
     return packed_bytes
 
 
-def unpack_scores(packed_bytes: bytes) -> Tuple[List[int], List[int]]:
+def unpack_scores_from_bytes(packed_bytes: bytes) -> Tuple[List[int], List[int]]:
     """
     Unpacks the byte array into metadata and validation scores.
 
@@ -147,6 +147,77 @@ def unpack_scores(packed_bytes: bytes) -> Tuple[List[int], List[int]]:
     return metadata_scores, validation_scores
 
 
+def pack_scores(metadata_scores: List[int], validation_scores: List[int]) -> str:
+    if len(metadata_scores) != len(validation_scores):
+        raise ValueError("metadata_scores and validation_scores must be the same length")
+
+    packed_str = ''
+
+    # Pack metadata scores in Big Endian format
+    for score in metadata_scores:
+        if not 0 <= score <= 255:
+            raise ValueError("Metadata scores must be uint16 values between 0 and 255")
+        # '>H' specifies big-endian unsigned short (2 bytes)
+        packed_str += str(score).zfill(3)
+
+    # Pack validation scores in Big Endian format
+    for score in validation_scores:
+        if not 0 <= score <= 255:
+            raise ValueError("Validation scores must be uint16 values between 0 and 255")
+        packed_str += str(score).zfill(3)
+
+    return packed_str
+
+
+def unpack_scores(packed_str: str) -> Tuple[List[int], List[int]]:
+    # total_scores = len(packed_bytes) // 2  # Each uint16 is 2 bytes
+    # num_categories = total_scores // 2
+
+    # metadata_scores = []
+    # validation_scores = []
+
+    # # Unpack metadata scores
+    # for i in range(num_categories):
+    #     score_bytes = packed_bytes[i*2:(i+1)*2]
+    #     score = struct.unpack('>H', score_bytes)[0]
+    #     metadata_scores.append(score)
+
+    # # Unpack validation scores
+    # for i in range(num_categories, num_categories*2):
+    #     score_bytes = packed_bytes[i*2:(i+1)*2]
+    #     score = struct.unpack('>H', score_bytes)[0]
+    #     validation_scores.append(score)
+
+    # return metadata_scores, validation_scores
+
+    length = len(packed_str)
+    total_scores = length // 3  # Each uint16 is 2 bytes
+    num_categories = total_scores // 2
+    
+    metadata_scores = []
+    validation_scores = []
+    
+    # Unpack metadata scores
+    for i in range(0, length // 2, 3):
+        num = 0
+        # Process up to 3 characters
+        for j in range(3):
+            if i + j < length:  # Ensure we don't go out of bounds
+                num = num * 10 + (ord(packed_str[i + j]) - ord('0'))  # Convert character to integer
+        metadata_scores.append(num)
+    
+    # Unpack validation scores
+    for i in range(length // 2, length, 3):
+        num = 0
+        # Process up to 3 characters
+        for j in range(3):
+            if i + j < length:  # Ensure we don't go out of bounds
+                num = num * 10 + (ord(packed_str[i + j]) - ord('0'))  # Convert character to integer
+        validation_scores.append(num)
+    
+    return metadata_scores, validation_scores
+
+
 def calculate_weighted_scores(scores: Dict) -> Dict[str, Tuple[float, float]]:
     """Calculate weighted scores for each file."""
     weighted_scores = {}
@@ -167,7 +238,7 @@ def calculate_weighted_scores(scores: Dict) -> Dict[str, Tuple[float, float]]:
     return weighted_scores
 
 
-def proof_of_quality(config: Dict[str, Any]) -> Tuple[bytes, Dict[str, Tuple[float, float]]]:
+def proof_of_quality(config: Dict[str, Any]) -> Tuple[str, Dict[str, Tuple[float, float]]]:
     """
     Calculate proof of quality scores for all relevant files in the given directory.
 
@@ -198,7 +269,7 @@ def proof_of_quality(config: Dict[str, Any]) -> Tuple[bytes, Dict[str, Tuple[flo
     return post_process_scores(category_scores), category_scores
 
 
-def post_process_scores(scores: Dict[str, Tuple[float, float]]) -> bytes:
+def post_process_scores(scores: Dict[str, Tuple[float, float]]) -> str:
     """
     Encode scores into a packed byte array in Big Endian format.
     Each score is encoded as a uint16 (2 bytes) in the following format:
@@ -226,7 +297,7 @@ def post_process_scores(scores: Dict[str, Tuple[float, float]]) -> bytes:
         ordered_metadata_scores.append(metadata_score)
         ordered_validation_scores.append(validation_score)
 
-    # Quantize scores to uint16 range (0 to 65535)
+    # Quantize scores to uint16 range (0 to 255)
     quantized_metadata_scores = quantize_scores(ordered_metadata_scores)
     quantized_validation_scores = quantize_scores(ordered_validation_scores)
 
@@ -236,7 +307,7 @@ def post_process_scores(scores: Dict[str, Tuple[float, float]]) -> bytes:
     return packed_scores
 
 
-def post_process_decode(packed_scores: bytes) -> Dict[str, Tuple[float, float]]:
+def post_process_decode(packed_scores: str) -> Dict[str, Tuple[float, float]]:
     """
     Decode packed byte array back into scores dictionary.
 
@@ -250,8 +321,8 @@ def post_process_decode(packed_scores: bytes) -> Dict[str, Tuple[float, float]]:
     metadata_scores, validation_scores = unpack_scores(packed_scores)
 
     # Convert quantized scores back to float in range 0.0 to 1.0
-    decoded_metadata_scores = [score / 65535 for score in metadata_scores]
-    decoded_validation_scores = [score / 65535 for score in validation_scores]
+    decoded_metadata_scores = [score / 255 for score in metadata_scores]
+    decoded_validation_scores = [score / 255 for score in validation_scores]
 
     # Reconstruct dictionary, filtering out zero scores
     scores_dict = {}
