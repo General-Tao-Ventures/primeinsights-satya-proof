@@ -18,7 +18,7 @@ def load_config() -> Dict[str, Any]:
     config = {
         'dlp_id': 1234,  # Set your own DLP ID here
         'use_sealing': os.path.isdir(SEALED_DIR),
-        'tee_api_endpoint': "https://tee.primeinsightsdao.com",
+        'tee_api_endpoint': "https://tee.primeinsightsdao.com/api",
         'uniqueness_threshold': 0.7,
         'num_perm': 128,
         'network': 'mainnet',
