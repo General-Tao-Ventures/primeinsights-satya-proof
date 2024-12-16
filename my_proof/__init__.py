@@ -21,7 +21,7 @@ class Proof:
         
         authenticity = proof_of_authenticity(self.config)
         uniqueness = proof_of_uniqueness(self.config)
-        category_scores_packed_str, quality = proof_of_quality(self.config)
+        category_scores_packed_str, category_scores = proof_of_quality(self.config)
 
         # # Iterate through files and calculate data validity
         # members = None
@@ -74,7 +74,7 @@ class Proof:
         
         # Additional (public) properties to include in the proof about the data
         self.proof_response.attributes = {
-            'category_scores': self.proof_response.quality, # Redundant with byte array
+            'category_scores': category_scores, # Redundant with byte array
         }
         
         remote_log(self.config, json.dumps(self.proof_response.model_dump(), indent=2))
