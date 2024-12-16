@@ -70,7 +70,11 @@ class Proof:
             self.proof_response.authenticity == 1
         )
         
-        self.proof_response.metadata = category_scores_packed_str
+        self.proof_response.metadata = {
+            'dlp_id': 3,
+            'category_scores': category_scores_packed_str,
+        }
+        # self.proof_response.metadata = category_scores_packed_str
         
         # Additional (public) properties to include in the proof about the data
         self.proof_response.attributes = {
