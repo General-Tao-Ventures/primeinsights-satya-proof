@@ -25,6 +25,7 @@ def load_config() -> Dict[str, Any]:
         'amazon_link': os.environ.get('AMAZON_LINK', None),
         'proof_key': os.environ.get('PROOF_KEY', None),
         'user_id': os.environ.get('USER_ID', None),
+        'remote_log_enabled': True if os.environ.get('REMOTE_LOG_ENABLED', False) else False,
     }
     logging.info(f"Using config: {json.dumps(config, indent=2)}")
     return config
