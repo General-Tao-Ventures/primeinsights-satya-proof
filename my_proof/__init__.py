@@ -71,8 +71,7 @@ class Proof:
         )
         
         self.proof_response.metadata = {
-            'dlp_id': 3,
-            'category_scores': category_scores_packed_str,
+            "category_scores": category_scores_packed_str,
         }
         # self.proof_response.metadata = category_scores_packed_str
         
