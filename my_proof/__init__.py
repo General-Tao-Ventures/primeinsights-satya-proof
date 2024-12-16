@@ -60,7 +60,7 @@ class Proof:
         self.proof_response.authenticity = authenticity
         self.proof_response.ownership = authenticity
         self.proof_response.uniqueness = uniqueness
-        self.proof_response.quality = quality
+        self.proof_response.quality = 0 # This is unused and irrelevant (we use category scores instead)
         
        # Aggregate scores and determine if the file is valid or not
         self.proof_response.score = 0 # This is unused and irrelevant (we use category scores instead)
@@ -75,8 +75,8 @@ class Proof:
         remote_log(self.config, json.dumps(self.proof_response.model_dump(), indent=2))
         
         # Additional (public) properties to include in the proof about the data
-        # self.proof_response.attributes = {
-        #     'category_scores': self.proof_response.quality, # Redundant with byte array
-        # }
+        self.proof_response.attributes = {
+            'category_scores': self.proof_response.quality, # Redundant with byte array
+        }
 
         return self.proof_response
