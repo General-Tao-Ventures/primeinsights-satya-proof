@@ -2,22 +2,24 @@ from my_proof.proof_of_quality import pack_scores, unpack_scores
 
 def test_pack_scores():
     metadata_scores_dict = {
-        "Retail Cart Items": 100,
-        "Digital Items": 9,
-        "Retail Order History": 104,
-        "Audible Purchase History": 122,
-        "Audible Library": 241,
-        "Audible Membership Billings": 38,
-        "Prime Video Viewing History": 4,
+        "Retail.CartItems.1.csv": 100,
+        "Digital Items.csv": 9,
+        "Retail.OrderHistory.1.csv": 104,
+        "Retail.OrderHistory.2.csv": 122,
+        "Audible.PurchaseHistory.csv": 241,
+        "Audible.Library.csv": 38,
+        "Audible.MembershipBillings.csv": 4,
+        "PrimeVideo.ViewingHistory.csv": 234,
     }
     validation_scores_dict = {
-        "Retail Cart Items": 43,
-        "Digital Items": 254,
-        "Retail Order History": 1,
-        "Audible Purchase History": 14,
-        "Audible Library": 55,
-        "Audible Membership Billings": 238,
-        "Prime Video Viewing History": 144,
+        "Retail.CartItems.1.csv": 43,
+        "Digital Items.csv": 254,
+        "Retail.OrderHistory.1.csv": 1,
+        "Retail.OrderHistory.2.csv": 14,
+        "Audible.PurchaseHistory.csv": 55,
+        "Audible.Library.csv": 238,
+        "Audible.MembershipBillings.csv": 144,
+        "PrimeVideo.ViewingHistory.csv": 24,
     }
     metadata_scores = [value for value in metadata_scores_dict.values()]
     validation_scores = [value for value in validation_scores_dict.values()]

@@ -158,13 +158,13 @@ def pack_scores(metadata_scores: List[int], validation_scores: List[int]) -> str
         if not 0 <= score <= 255:
             raise ValueError("Metadata scores must be uint16 values between 0 and 255")
         # '>H' specifies big-endian unsigned short (2 bytes)
-        packed_str += str(score).zfill(3)
+        packed_str += f"{score:02x}"
 
     # Pack validation scores in Big Endian format
     for score in validation_scores:
         if not 0 <= score <= 255:
             raise ValueError("Validation scores must be uint16 values between 0 and 255")
-        packed_str += str(score).zfill(3)
+        packed_str += f"{score:02x}"
 
     return packed_str
 
@@ -191,29 +191,19 @@ def unpack_scores(packed_str: str) -> Tuple[List[int], List[int]]:
     # return metadata_scores, validation_scores
 
     length = len(packed_str)
-    total_scores = length // 3  # Each uint16 is 2 bytes
+    total_scores = length // 2  # Each uint16 is 2 bytes
     num_categories = total_scores // 2
     
     metadata_scores = []
     validation_scores = []
     
     # Unpack metadata scores
-    for i in range(0, length // 2, 3):
-        num = 0
-        # Process up to 3 characters
-        for j in range(3):
-            if i + j < length:  # Ensure we don't go out of bounds
-                num = num * 10 + (ord(packed_str[i + j]) - ord('0'))  # Convert character to integer
-        metadata_scores.append(num)
+    for i in range(0, length // 2, 2):
+        metadata_scores.append(int(packed_str[i:i + 2], 16))
     
     # Unpack validation scores
-    for i in range(length // 2, length, 3):
-        num = 0
-        # Process up to 3 characters
-        for j in range(3):
-            if i + j < length:  # Ensure we don't go out of bounds
-                num = num * 10 + (ord(packed_str[i + j]) - ord('0'))  # Convert character to integer
-        validation_scores.append(num)
+    for i in range(length // 2, length, 2):
+        validation_scores.append(int(packed_str[i:i + 2], 16))
     
     return metadata_scores, validation_scores
 
