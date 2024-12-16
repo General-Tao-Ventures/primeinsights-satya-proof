@@ -19,6 +19,7 @@ import csv
 import logging
 from typing import Dict, List, Tuple, Any
 from pathlib import Path
+from my_proof.utils import remote_log
 from .config import INTERESTING_FILES, get_validation_config
 from .data_analyzers import analyze_data
 from .score_calculators import calculate_score
@@ -48,18 +49,22 @@ def process_single_file(csv_file: Path, config: Dict[str, any]) -> Dict:
     validation_config = get_validation_config(config)
     metadata_score = calculate_score(csv_file.name, metadata, validation_config)
     logger.info(f"Metadata score for {csv_file.name}: {metadata_score}")
+    remote_log(config, f"Metadata score for {csv_file.name}: {metadata_score}")
 
     # Calculate validation score
     if "OPENAI_API_KEY" in config and metadata_score["is_valid"]:
         logger.info("OPENAI_API_KEY is set. Performing LLM validation.")
+        remote_log(config, "OPENAI_API_KEY is set. Performing LLM validation.")
         validation_score = validate_sample(file_data, csv_file.name, config["OPENAI_API_KEY"], validation_config)
     else:
         logger.info("OPENAI_API_KEY not set or metadata invalid. Skipping LLM validation.")
+        remote_log(config, "OPENAI_API_KEY not set or metadata invalid. Skipping LLM validation.")
         validation_score = {
             "is_valid": False,
             "score": 0,
         }
     logger.info(f"Validation score for {csv_file.name}: {validation_score}")
+    remote_log(config, f"Validation score for {csv_file.name}: {validation_score}")
 
     return {
         "metadata_score": metadata_score,
@@ -158,13 +163,13 @@ def pack_scores(metadata_scores: List[int], validation_scores: List[int]) -> str
         if not 0 <= score <= 255:
             raise ValueError("Metadata scores must be uint16 values between 0 and 255")
         # '>H' specifies big-endian unsigned short (2 bytes)
-        packed_str += str(score).zfill(3)
+        packed_str += f"{score:02x}"
 
     # Pack validation scores in Big Endian format
     for score in validation_scores:
         if not 0 <= score <= 255:
             raise ValueError("Validation scores must be uint16 values between 0 and 255")
-        packed_str += str(score).zfill(3)
+        packed_str += f"{score:02x}"
 
     return packed_str
 
@@ -191,29 +196,19 @@ def unpack_scores(packed_str: str) -> Tuple[List[int], List[int]]:
     # return metadata_scores, validation_scores
 
     length = len(packed_str)
-    total_scores = length // 3  # Each uint16 is 2 bytes
+    total_scores = length // 2  # Each uint16 is 2 bytes
     num_categories = total_scores // 2
     
     metadata_scores = []
     validation_scores = []
     
     # Unpack metadata scores
-    for i in range(0, length // 2, 3):
-        num = 0
-        # Process up to 3 characters
-        for j in range(3):
-            if i + j < length:  # Ensure we don't go out of bounds
-                num = num * 10 + (ord(packed_str[i + j]) - ord('0'))  # Convert character to integer
-        metadata_scores.append(num)
+    for i in range(0, length // 2, 2):
+        metadata_scores.append(int(packed_str[i:i + 2], 16))
     
     # Unpack validation scores
-    for i in range(length // 2, length, 3):
-        num = 0
-        # Process up to 3 characters
-        for j in range(3):
-            if i + j < length:  # Ensure we don't go out of bounds
-                num = num * 10 + (ord(packed_str[i + j]) - ord('0'))  # Convert character to integer
-        validation_scores.append(num)
+    for i in range(length // 2, length, 2):
+        validation_scores.append(int(packed_str[i:i + 2], 16))
     
     return metadata_scores, validation_scores
 
@@ -251,11 +246,13 @@ def proof_of_quality(config: Dict[str, Any]) -> Tuple[str, Dict[str, Tuple[float
     # Find relevant CSV files
     csv_files = find_csv_files(config.get('input_extracted_dir'))
     logger.info(f"Processing {len(csv_files)} CSV files")
+    remote_log(config, f"Processing {len(csv_files)} CSV files")
 
     # Process each file
     scores = {}
     for csv_file in csv_files:
         logger.info(f"Processing file: {csv_file.name}")
+        remote_log(config, f"Processing file: {csv_file.name}")
         scores[csv_file.name] = process_single_file(csv_file, config)
 
     # Calculate final scores
@@ -264,7 +261,9 @@ def proof_of_quality(config: Dict[str, Any]) -> Tuple[str, Dict[str, Tuple[float
 
     # Log results
     logger.info(f"Pre-Weighted Scores: {scores}")
+    remote_log(config, f"Pre-Weighted Scores: {scores}")
     logger.info(f"Category Scores: {category_scores}")
+    remote_log(config, f"Category Scores: {category_scores}")
 
     return post_process_scores(category_scores), category_scores
 

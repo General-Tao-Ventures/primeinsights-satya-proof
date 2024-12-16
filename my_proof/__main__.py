@@ -16,7 +16,7 @@ logging.basicConfig(level=logging.INFO, format='%(message)s')
 def load_config() -> Dict[str, Any]:
     """Load proof configuration from environment variables."""
     config = {
-        'dlp_id': 1234,  # Set your own DLP ID here
+        'dlp_id': 3,  # Set your own DLP ID here
         'tee_api_endpoint': "https://tee.primeinsightsdao.com/api",
         'uniqueness_threshold': 0.7,
         'num_perm': 128,
@@ -25,6 +25,7 @@ def load_config() -> Dict[str, Any]:
         'amazon_link': os.environ.get('AMAZON_LINK', None),
         'proof_key': os.environ.get('PROOF_KEY', None),
         'user_id': os.environ.get('USER_ID', None),
+        'remote_log_enabled': True if os.environ.get('REMOTE_LOG_ENABLED', False) else False,
     }
     logging.info(f"Using config: {json.dumps(config, indent=2)}")
     return config
