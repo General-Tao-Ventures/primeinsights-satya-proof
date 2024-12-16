@@ -75,8 +75,8 @@ class Proof:
         remote_log(self.config, json.dumps(self.proof_response.model_dump(), indent=2))
         
         # Additional (public) properties to include in the proof about the data
-        self.proof_response.attributes = {
-            'category_scores': self.proof_response.quality, # Redundant with byte array
-        }
+        # self.proof_response.attributes = {
+        #     'category_scores': self.proof_response.quality, # Redundant with byte array
+        # }
 
         return self.proof_response
