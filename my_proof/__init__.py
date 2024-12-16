@@ -63,7 +63,7 @@ class Proof:
         self.proof_response.quality = quality
         
        # Aggregate scores and determine if the file is valid or not
-        self.proof_response.score = -1 # This is unused and irrelevant (we use category scores instead)
+        self.proof_response.score = 0 # This is unused and irrelevant (we use category scores instead)
         self.proof_response.valid = (
             self.proof_response.uniqueness == 1 and 
             self.proof_response.ownership == 1 and 
