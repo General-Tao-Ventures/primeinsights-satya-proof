@@ -4,6 +4,7 @@ import os
 from typing import Dict, Any
 
 from my_proof.models import ProofResponse
+from my_proof.utils import remote_log
 from my_proof.proof_of_authenticity import proof_of_authenticity
 from my_proof.proof_of_uniqueness import proof_of_uniqueness
 from my_proof.proof_of_quality import proof_of_quality
@@ -70,6 +71,8 @@ class Proof:
         )
         
         self.proof_response.metadata = category_scores_packed_str
+        
+        remote_log(self.config, json.dumps(self.proof_response.model_dump(), indent=2))
         
         # Additional (public) properties to include in the proof about the data
         self.proof_response.attributes = {
