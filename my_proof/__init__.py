@@ -71,13 +71,13 @@ class Proof:
         )
         
         self.proof_response.metadata = {
-            "category_scores": category_scores_packed_str,
+            "_": category_scores_packed_str,
         }
         # self.proof_response.metadata = category_scores_packed_str
         
         # Additional (public) properties to include in the proof about the data
         self.proof_response.attributes = {
-            'category_scores': category_scores, # Redundant with byte array
+            '_': category_scores, # Redundant with byte array
         }
         
         remote_log(self.config, json.dumps(self.proof_response.model_dump(), indent=2))
