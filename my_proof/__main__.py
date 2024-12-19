@@ -29,7 +29,6 @@ def load_config() -> Dict[str, Any]:
         'remote_log_enabled': True if os.environ.get('REMOTE_LOG_ENABLED', False) else False,
     }
     logging.info(f"Using config: {json.dumps(config, indent=2)}")
-    remote_log(config, json.dumps(config, indent=2))
     return config
 
 
