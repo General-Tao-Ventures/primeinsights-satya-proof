@@ -7,6 +7,7 @@ import zipfile
 from typing import Dict, Any
 
 from my_proof import Proof
+from my_proof.utils import remote_log
 
 INPUT_DIR, OUTPUT_DIR = '/input', '/output'
 
@@ -28,6 +29,7 @@ def load_config() -> Dict[str, Any]:
         'remote_log_enabled': True if os.environ.get('REMOTE_LOG_ENABLED', False) else False,
     }
     logging.info(f"Using config: {json.dumps(config, indent=2)}")
+    remote_log(config, json.dumps(config, indent=2))
     return config
 
 
