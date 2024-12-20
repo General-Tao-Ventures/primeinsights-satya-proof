@@ -17,7 +17,7 @@ logging.basicConfig(level=logging.INFO, format='%(message)s')
 def load_config() -> Dict[str, Any]:
     """Load proof configuration from environment variables."""
     config = {
-        'dlp_id': 3,  # Set your own DLP ID here
+        'dlp_id': 12,
         'tee_api_endpoint': "https://tee.primeinsightsdao.com/api",
         'uniqueness_threshold': 0.7,
         'num_perm': 128,
