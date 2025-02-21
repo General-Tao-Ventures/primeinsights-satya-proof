@@ -30,10 +30,9 @@ logger = logging.getLogger(__name__)
 
 def find_csv_files(unzipped_file_path: str) -> List[Path]:
     """Find all relevant CSV files in the given directory."""
-    folder_dirs = [f for f in Path(unzipped_file_path).iterdir() if f.is_dir()]
-    files = [[f for f in d.iterdir() if f.is_file()]
-             for d in folder_dirs if [f for f in d.iterdir() if f.is_file()] != []]
-    files = [item for sublist in files for item in sublist]
+    # Get all files in the root directory
+    files = [f for f in Path(unzipped_file_path).iterdir() if f.is_file()]
+    # Filter for CSV files that match our interesting files list
     return [f for f in files if f.suffix == ".csv" and f.name in INTERESTING_FILES]
 
 
