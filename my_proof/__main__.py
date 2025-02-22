@@ -18,8 +18,8 @@ def load_config() -> Dict[str, Any]:
     """Load proof configuration from environment variables."""
     config = {
         'dlp_id': 30,
-        'tee_api_endpoint': "https://test-tee.primeinsightsdao.com/api",
-        'uniqueness_threshold': 0.7,
+        'tee_api_endpoint': "https://tee.primeinsightsdao.com/api",
+        'uniqueness_threshold': 0.5,
         'num_perm': 128,
         'network': 'mainnet',
         'prime_api_key': os.environ.get('PRIME_API_KEY', None),
